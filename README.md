@@ -35,13 +35,15 @@ tokscope corpus_si.txt \
 ```
 
 ```
-Tokenizer                           Vocab     Tokens     Fertility  Chars/tok  UNK rate  Premium
-------------------------------------------------------------------------------------------------
-sp:sinhala_bpe.model                30000     71432      1.31       5.61       0.0       1.02
-tiktoken:gpt-4o                     200019    132881     2.44       3.01       0.0       1.9
-xlm-roberta-base                    250002    154332     2.83       2.59       0.0       2.21
-google/mt5-small                    250100    231449     4.25       1.73       0.0       3.31
+Tokenizer                           Vocab     Tokens     Fertility  Chars/tok  UNK rate
+---------------------------------------------------------------------------------------
+sp:sinhala_bpe_v2.model             32000     41126      1.5801     4.05       0.0007
+xlm-roberta-base                    250002    52982      2.0357     3.1437     0.0
+tiktoken:gpt-4o                     200019    84752      3.2563     1.9653     0.0
+tiktoken:cl100k_base                100277    254974     9.7965     0.6532     0.0
 ```
+
+(Real measurements on OSCAR Sinhala — full results in [the study](study/README.md).)
 
 Tokenizer specs: `hf:NAME` (default), `tiktoken:MODEL`, `sp:PATH`, and `ws:`
 (whitespace baseline — fertility exactly 1.0 by construction).
@@ -74,11 +76,13 @@ Custom tokenizers: pass any object with a `name`, a `vocab_size`, and a
 
 ## Why this exists
 
-Built while studying how tokenizers treat **Sinhala** (~20M speakers): the
-numbers above are real — a 30k-vocab SentencePiece BPE trained on a Sinhala
-corpus by one student beats 250k-vocab multilingual tokenizers by 2–3× on
-Sinhala text. If you work on a low-resource language, measuring this is step
-one of fixing it.
+Built while studying how tokenizers treat **Sinhala** (~20M speakers). The
+headline findings from [the full study](study/README.md): Sinhala pays a
+**2.26× token premium** vs English for the same content on GPT-4o (7.37× on
+the original GPT-4 tokenizer); a 32k-vocab SentencePiece BPE trained on OSCAR
+Sinhala by one student beats 200k–250k multilingual vocabularies by 1.3–2×;
+and mBERT silently replaces **62%** of Sinhala tokens with `[UNK]`. If you
+work on a low-resource language, measuring this is step one of fixing it.
 
 ## License
 
