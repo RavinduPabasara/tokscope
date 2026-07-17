@@ -1,0 +1,6 @@
+tokenizer,vocab_size,token_count,word_count,fertility,chars_per_token,bytes_per_token,unk_rate,premium
+whitespace,,360407,360407,1.0,5.5493,14.4818,0.0,0.8369
+xlm-roberta-base,250002,558834,360407,1.5506,3.5789,9.3397,0.0,1.1573
+sp:spiece.model,250100,818867,360407,2.2721,2.4424,6.3738,0.0,1.4255
+tiktoken:gpt-4o,200019,1082666,360407,3.004,1.8473,4.8208,0.0,2.2571
+tiktoken:cl100k_base,100277,3551219,360407,9.8534,0.5632,1.4697,0.0,7.3668

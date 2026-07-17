@@ -1,0 +1,9 @@
+tokenizer,vocab_size,token_count,word_count,fertility,chars_per_token,bytes_per_token,unk_rate
+whitespace,,26027,26027,1.0,6.3995,14.9825,0.0
+bert-base-multilingual-cased,119547,34030,26027,1.3075,4.8945,11.459,0.6165
+sp:sinhala_bpe_v2.model,32000,41126,26027,1.5801,4.05,9.4818,0.0007
+sp:sinhala_bpe.model,30000,45357,26027,1.7427,3.6722,8.5973,0.1068
+xlm-roberta-base,250002,52982,26027,2.0357,3.1437,7.36,0.0
+sp:spiece.model,250100,66594,26027,2.5587,2.5011,5.8556,0.0
+tiktoken:gpt-4o,200019,84752,26027,3.2563,1.9653,4.6011,0.0
+tiktoken:cl100k_base,100277,254974,26027,9.7965,0.6532,1.5294,0.0
