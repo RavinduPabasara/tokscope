@@ -1,0 +1,73 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tokscope"
+version = "0.1.0"
+description = "Measure how efficiently LLM tokenizers handle your language: fertility, UNK rate, and token premium across HuggingFace, tiktoken, and SentencePiece tokenizers"
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [
+    {name = "Ravindu Pabasara Karunarathna", email = "karurpabe@gmail.com"}
+]
+maintainers = [
+    {name = "Ravindu Pabasara Karunarathna", email = "karurpabe@gmail.com"}
+]
+keywords = ["tokenizer", "llm", "fertility", "low-resource languages", "nlp", "benchmark", "sinhala"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Text Processing :: Linguistic",
+    "Typing :: Typed",
+]
+requires-python = ">=3.9"
+dependencies = []
+
+[project.scripts]
+tokscope = "tokscope.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/RavinduPabasara/tokscope"
+Documentation = "https://github.com/RavinduPabasara/tokscope#readme"
+Repository = "https://github.com/RavinduPabasara/tokscope"
+"Bug Tracker" = "https://github.com/RavinduPabasara/tokscope/issues"
+
+[project.optional-dependencies]
+hf = ["transformers"]
+tiktoken = ["tiktoken"]
+sp = ["sentencepiece"]
+all = ["transformers", "tiktoken", "sentencepiece"]
+dev = [
+    "pytest>=6.0",
+    "pytest-cov>=2.0",
+    "black>=21.0",
+    "flake8>=3.8",
+    "mypy>=0.800",
+    "sentencepiece",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["tokscope*"]
+
+[tool.setuptools.package-data]
+tokscope = ["py.typed"]
+
+[tool.black]
+line-length = 88
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
