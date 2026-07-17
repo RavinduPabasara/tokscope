@@ -106,6 +106,5 @@ trained on OSCAR Sinhala) ships in this directory:
 ## Cite / credit
 
 Corpus: [OSCAR](https://oscar-project.org/) (Sinhala subset).
-Study and tokenizer: Ravindu Pabasara Karunarathna, with AI assistance
-(Claude Code) for tooling; measurements are reproducible with the commands
-above.
+Study and tokenizer: Ravindu Pabasara Karunarathna; measurements are
+reproducible with the commands above.
