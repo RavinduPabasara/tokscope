@@ -26,10 +26,10 @@ def analyze(
     tokens(text) / tokens(reference_text) under the same tokenizer.
     """
     adapter = _resolve(tokenizer)
-    tokens, unk_count = adapter.tokenize(text)
+    tokens, unk_count, byte_count = adapters.run(adapter, text)
     reference_token_count = None
     if reference_text is not None:
-        ref_tokens, _ = adapter.tokenize(reference_text)
+        ref_tokens = adapters.run(adapter, reference_text)[0]
         reference_token_count = len(ref_tokens)
     return build_report(
         name=adapter.name,
@@ -38,6 +38,7 @@ def analyze(
         unk_count=unk_count,
         vocab_size=adapter.vocab_size,
         reference_token_count=reference_token_count,
+        byte_token_count=byte_count,
     )
 
 

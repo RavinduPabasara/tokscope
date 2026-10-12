@@ -39,6 +39,39 @@ class TestSentencePieceAdapter:
         assert unk == 0
 
 
+class TestByteFallback:
+    def test_sentencepiece_byte_fallback_counted(self, tmp_path):
+        spm = pytest.importorskip("sentencepiece")
+        corpus = tmp_path / "corpus.txt"
+        corpus.write_text("the cat sat on the mat\n" * 200, encoding="utf-8")
+        spm.SentencePieceTrainer.train(
+            input=str(corpus),
+            model_prefix=str(tmp_path / "m"),
+            vocab_size=300,
+            byte_fallback=True,
+            hard_vocab_limit=False,
+            character_coverage=1.0,
+            minloglevel=2,
+        )
+        adapter = load(f"sp:{tmp_path / 'm.model'}")
+        # Sinhala never appeared in training: each letter becomes 3 byte pieces.
+        tokens, unk, byte_count = adapter.tokenize_with_bytes("අම")
+        assert adapter.tokenize("අම") == (tokens, unk)
+        assert unk == 0
+        assert byte_count == 6
+        assert all(t.startswith("<0x") for t in tokens if t != "▁")
+
+    def test_tiktoken_partial_characters_counted(self):
+        pytest.importorskip("tiktoken")
+        try:
+            adapter = load("tiktoken:cl100k_base")
+        except Exception:  # pragma: no cover - encoding download unavailable
+            pytest.skip("cl100k_base encoding not available offline")
+        _, _, byte_count = adapter.tokenize_with_bytes("cat සිංහල")
+        assert byte_count > 0
+        assert adapter.tokenize_with_bytes("cat")[2] == 0
+
+
 class TestCli:
     def test_table_json_csv(self, tmp_path, capsys):
         corpus = tmp_path / "corpus.txt"
@@ -51,6 +84,7 @@ class TestCli:
         assert rc == 0
         table = capsys.readouterr().out
         assert "whitespace" in table and "Fertility" in table
+        assert "Byte rate" in table
         data = json.loads(json_out.read_text(encoding="utf-8"))
         assert data[0]["fertility"] == 1.0
         assert csv_out.read_text(encoding="utf-8").startswith("tokenizer,")

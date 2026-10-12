@@ -1,6 +1,6 @@
 """Tests for metric math and the whitespace baseline."""
 
-from tokscope import Report, analyze, compare
+from tokscope import analyze, compare
 from tokscope.metrics import build_report
 
 
@@ -61,3 +61,34 @@ class TestCompare:
         reports = compare("some words here", ["ws:", Doubler()])
         assert [r.tokenizer for r in reports] == ["whitespace", "doubler"]
         assert reports[1].fertility == 2.0
+
+
+class TestByteTokens:
+    def test_rate(self):
+        r = build_report(
+            "t", "අ", ["<0xE0>", "<0xB6>", "<0x85>", "x"], 0, None, byte_token_count=3
+        )
+        assert r.byte_token_rate == 0.75
+        assert r.as_dict()["byte_token_rate"] == 0.75
+
+    def test_unknown_when_adapter_does_not_report(self):
+        r = build_report("t", "a", ["a"], 0, None)
+        assert r.byte_token_rate is None
+        assert "byte_token_rate" not in r.as_dict()
+
+    def test_whitespace_reports_zero(self):
+        assert analyze("මම යමි", "ws:").byte_token_rate == 0.0
+
+    def test_custom_adapters_with_and_without_byte_count(self):
+        class TwoTuple:
+            name, vocab_size = "two", None
+
+            def tokenize(self, text):
+                return text.split(), 0
+
+        class WithBytes(TwoTuple):
+            def tokenize_with_bytes(self, text):
+                return list(text), 0, 2
+
+        assert analyze("a b", TwoTuple()).byte_token_rate is None
+        assert analyze("abcd", WithBytes()).byte_token_rate == 0.5

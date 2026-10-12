@@ -1,13 +1,14 @@
 [build-system]
-requires = ["setuptools>=45", "wheel"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "tokscope"
-version = "0.1.0"
-description = "Measure how efficiently LLM tokenizers handle your language: fertility, UNK rate, and token premium across HuggingFace, tiktoken, and SentencePiece tokenizers"
+version = "0.2.0"
+description = "Measure how efficiently LLM tokenizers handle your language: fertility, UNK rate, byte-token rate, and token premium across HuggingFace, tiktoken, and SentencePiece tokenizers"
 readme = "README.md"
-license = {file = "LICENSE"}
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [
     {name = "Ravindu Pabasara Karunarathna", email = "karurpabe@gmail.com"}
 ]
@@ -19,19 +20,18 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Topic :: Text Processing :: Linguistic",
     "Typing :: Typed",
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = []
 
 [project.scripts]
@@ -49,11 +49,13 @@ tiktoken = ["tiktoken"]
 sp = ["sentencepiece"]
 all = ["transformers", "tiktoken", "sentencepiece"]
 dev = [
-    "pytest>=6.0",
-    "pytest-cov>=2.0",
-    "black>=21.0",
-    "flake8>=3.8",
-    "mypy>=0.800",
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "black>=24.0",
+    "flake8>=7.0",
+    "mypy>=1.10",
+    "build",
+    "twine",
     "sentencepiece",
 ]
 
@@ -68,6 +70,6 @@ tokscope = ["py.typed"]
 line-length = 88
 
 [tool.mypy]
-python_version = "3.9"
+python_version = "3.10"
 warn_return_any = true
 warn_unused_configs = true

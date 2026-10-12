@@ -12,8 +12,8 @@ catastrophic — multilingual BERT tokenizes Sinhala text into **100% `[UNK]`
 tokens** (it literally cannot see the language).
 
 `tokscope` makes this measurable in one command: **fertility** (tokens per
-word), **UNK rate**, **chars/bytes per token**, and the **token premium** your
-language pays relative to a parallel English text.
+word), **UNK rate**, **byte-token rate**, **chars/bytes per token**, and the
+**token premium** your language pays relative to a parallel English text.
 
 ## Installation
 
@@ -56,13 +56,15 @@ import tokscope
 report = tokscope.analyze(text, "tiktoken:gpt-4o", reference_text=english_text)
 report.fertility        # tokens per word
 report.unk_rate         # fraction of tokens the tokenizer can't represent
+report.byte_token_rate  # fraction of tokens that are raw bytes, not characters
 report.premium          # token cost multiplier vs the reference text
 
 reports = tokscope.compare(text, ["xlm-roberta-base", "tiktoken:gpt-4o", "ws:"])
 ```
 
 Custom tokenizers: pass any object with a `name`, a `vocab_size`, and a
-`tokenize(text) -> (tokens, unk_count)` method.
+`tokenize(text) -> (tokens, unk_count)` method. To report byte tokens too,
+add `tokenize_with_bytes(text) -> (tokens, unk_count, byte_token_count)`.
 
 ## Metrics
 
@@ -72,7 +74,22 @@ Custom tokenizers: pass any object with a `name`, a `vocab_size`, and a
 | chars_per_token | characters ÷ tokens | How much text each token carries |
 | bytes_per_token | UTF-8 bytes ÷ tokens | Script-independent capacity measure |
 | unk_rate | UNK tokens ÷ tokens | Any nonzero value = the tokenizer cannot represent the text |
+| byte_token_rate | byte tokens ÷ tokens | Byte-fallback pieces (`<0xE0>`) or tokens holding part of a character. These tokenizers never emit UNK, so this is how you see that they barely know the script |
 | premium | tokens(text) ÷ tokens(reference) | The cost multiplier your language pays for the same content |
+
+The UNK rate alone can be misleading. On the same Sinhala paragraph:
+
+| Tokenizer | Fertility | UNK rate | Byte rate |
+|---|---:|---:|---:|
+| tiktoken:gpt-4o | 3.55 | 0.00 | 0.00 |
+| tiktoken:cl100k_base | 11.75 | 0.00 | **0.99** |
+| gpt2-medium | 17.00 | 0.00 | **0.94** |
+| bert-base-multilingual-cased | 1.10 | **0.91** | 0.00 |
+
+`cl100k_base` reports no unknown tokens, yet 99% of its tokens are fragments
+of Sinhala letters: it has almost no Sinhala vocabulary. mBERT looks
+efficient (fertility 1.10) only because it replaces nearly every word with a
+single `[UNK]`.
 
 ## Why this exists
 

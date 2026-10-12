@@ -138,3 +138,6 @@ dmypy.json
 # OS
 .DS_Store
 Thumbs.db 
+# Articles and drafts stay local — never published through the repo
+*article*.md
+*draft*.md

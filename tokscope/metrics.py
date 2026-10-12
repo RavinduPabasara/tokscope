@@ -9,6 +9,11 @@ Definitions:
   better-conditioned inputs for an LLM.
 - unk_rate: fraction of tokens that are the unknown token. Any nonzero
   value means the tokenizer cannot represent parts of the text at all.
+- byte_token_rate: fraction of tokens that are raw bytes rather than whole
+  characters: byte-fallback pieces such as <0xE0> in SentencePiece models,
+  or tokens holding part of a character in byte-level BPE. UNK rate is 0
+  for these tokenizers even when they barely know the script, so this is
+  the metric that shows it.
 - premium: ratio of this tokenizer's token count to a reference token
   count for parallel text (e.g. Sinhala vs English translation). A
   premium of 3.0 means the language costs 3x more tokens for the same
@@ -34,6 +39,7 @@ class Report:
     unk_count: int
     sample_tokens: List[str] = field(default_factory=list)
     premium: Optional[float] = None
+    byte_token_count: Optional[int] = None  # None: the adapter doesn't report it
 
     @property
     def fertility(self) -> float:
@@ -51,6 +57,12 @@ class Report:
     def unk_rate(self) -> float:
         return self.unk_count / self.token_count if self.token_count else 0.0
 
+    @property
+    def byte_token_rate(self) -> Optional[float]:
+        if self.byte_token_count is None:
+            return None
+        return self.byte_token_count / self.token_count if self.token_count else 0.0
+
     def as_dict(self) -> dict:
         d = {
             "tokenizer": self.tokenizer,
@@ -62,6 +74,8 @@ class Report:
             "bytes_per_token": round(self.bytes_per_token, 4),
             "unk_rate": round(self.unk_rate, 4),
         }
+        if self.byte_token_rate is not None:
+            d["byte_token_rate"] = round(self.byte_token_rate, 4)
         if self.premium is not None:
             d["premium"] = round(self.premium, 4)
         return d
@@ -75,6 +89,7 @@ def build_report(
     vocab_size: Optional[int],
     reference_token_count: Optional[int] = None,
     sample_size: int = 12,
+    byte_token_count: Optional[int] = None,
 ) -> Report:
     """Assemble a Report from a tokenized text."""
     token_count = len(tokens)
@@ -91,4 +106,5 @@ def build_report(
         unk_count=unk_count,
         sample_tokens=tokens[:sample_size],
         premium=premium,
+        byte_token_count=byte_token_count,
     )
